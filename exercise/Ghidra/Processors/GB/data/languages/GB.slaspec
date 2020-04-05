@@ -1,0 +1,143 @@
+# sleigh specification file for GameBoy (LR35902)
+
+define endian=little;
+define alignment=1;
+
+define space ram     type=ram_space      size=2  default;
+define space io      type=ram_space      size=2;
+@define PTRSIZE  "2"
+
+# Area in address space of IO and IE
+@define IO_OFFSET "0xff00"
+
+define space register type=register_space size=1;
+
+define register offset=0x00 size=1 [ F A C B E D L H ];
+## TODO: Add missing registers ##
+define register offset=0x20 size=1 [ F_ A_ C_ B_ E_ D_ L_ H_ ]; # Alternate registers, needed for decompilation
+## TODO: Add missing registers ##
+define register offset=0x40 size=2 [ _  PC SP ];
+
+# Fake Registers used for pcode control
+define register offset=0x60 size=1 [
+    DECOMPILE_MODE
+];
+
+# Flag bits (?? manual is very confusing - could be typos!)
+@define C_flag "F[4,1]" # C: Carry
+@define H_flag "F[5,1]" # H: Half Carry
+@define N_flag "F[6,1]" # N: Add/Subtract - used by DAA to distinguish between ADD and SUB instructions (0=ADD,1=SUB)
+@define Z_flag "F[7,1]" # Z: Zero
+
+define token opbyte (8)
+    op0_8        = (0,7)
+    op6_2        = (6,7)
+    dRegPair4_2  = (4,5)
+    sRegPair4_2  = (4,5)
+    qRegPair4_2  = (4,5)
+    reg3_3       = (3,5)
+    bits3_3      = (3,5)
+    bits0_4      = (0,3)
+    reg0_3       = (0,2)
+    bits0_3      = (0,2)
+;
+
+define token data8 (8)
+    imm8  = (0,7)
+    sign8 = (7,7)
+    simm8 = (0,7) signed
+;
+
+define token data16 (16)
+    timm4  = (12,15)
+    imm16  = ( 0,15)
+    sign16 = (15,15)
+    simm16 = ( 0,15) signed
+;
+
+# value 6 (0b110) is '_' => not valid or false
+attach variables [ reg0_3 reg3_3 ] [ B C D E H L _ A ];
+
+attach variables [ sRegPair4_2 dRegPair4_2 ] [ BC DE HL SP ];
+
+attach variables [ qRegPair4_2 ] [ BC DE HL AF ];
+
+################################################################
+# Psuedo Instructions
+################################################################
+
+define pcodeop segment; # Define special pcodeop that calculates the RAM address
+# given the segment selector and offset as input
+
+define pcodeop BCDadjust;
+define pcodeop BCDadjustCarry;
+
+define pcodeop disableMaskableInterrupts;
+define pcodeop enableMaskableInterrupts;
+define pcodeop halt;
+define pcodeop stop;
+
+################################################################
+# Macros
+################################################################
+
+macro setZeroFlag(result) {
+    $(Z_flag) = (result == 0);
+}
+
+macro additionFlags(operand1, operand2) {
+    local AFmask = -1 >> 4;
+    $(H_flag) = (((operand1 & AFmask) + (operand2 & AFmask)) & (AFmask + 1)) != 0;
+    $(N_flag) = 0;
+    $(C_flag) = carry(operand1, operand2);
+}
+
+macro additionWithCarry(operand1, operand2, result) {
+    local Ccopy = zext($(C_flag));
+    local AFmask = -1 >> 4;
+    $(H_flag) = (((operand1 & AFmask) + (operand2 & AFmask) + Ccopy) & (AFmask + 1)) != 0;
+    $(N_flag) = 0;
+    $(C_flag) = carry(operand1, operand2);
+    local tempResult = operand1 + operand2;
+    $(C_flag) = $(C_flag) || carry(tempResult, Ccopy);
+    result = tempResult + Ccopy;
+}
+
+macro push16(val16) {
+    SP = SP - 2;
+    *:2 SP = val16; 
+}
+
+macro pop16(ret16) {
+    ret16 = *:2 SP;
+    SP = SP + 2; 
+}
+
+macro MemRead(dest,off) {
+    ptr:$(PTRSIZE) = off;
+    dest = *:1 ptr;
+}
+
+################################################################
+
+Addr16: imm16  is imm16      { export *:1 imm16; }
+
+Off8: +^simm8  is sign8=0 & simm8 { export simm8; }
+Off8: simm8  is sign8=1 & simm8 { export simm8; }
+
+################################################################
+
+# Opcode 0xF8
+:LD HL,SP^Off8  is op0_8=0xf8 & HL & SP; Off8 {
+    additionFlags(SP, Off8);
+    $(Z_flag) = 0;
+    HL = SP + Off8;
+}
+
+# Opcode 0xCD (not used in the exercise)
+:CALL Addr16        is op0_8=0xcd; Addr16 {
+    push16(&:2 inst_next);
+    call Addr16;
+}
+
+## TODO: Add missing instructions ##

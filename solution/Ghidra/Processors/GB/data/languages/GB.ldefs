@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<language_definitions>
+  <language processor="GB"
+            endian="little"
+            size="16"
+            variant="default"
+            version="1.0"
+            slafile="GB.sla"
+            processorspec="GB.pspec"
+            id="GB:LE:16:default">
+    <description>GameBoy LR35902</description>
+    <compiler name="default" spec="GB.cspec" id="default"/>
+  </language>
+</language_definitions>

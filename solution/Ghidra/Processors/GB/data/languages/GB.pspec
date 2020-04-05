@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<processor_spec>
+  <programcounter register="PC"/>
+  
+  <context_data>
+    <tracked_set space="ram">
+      <set name="DECOMPILE_MODE" val="1"/>
+    </tracked_set>
+  </context_data>
+  
+  <register_data>
+    <register name="AF_" group="Alt"/>
+    <register name="BC_" group="Alt"/>
+    <register name="DE_" group="Alt"/>
+    <register name="HL_" group="Alt"/>
+  </register_data>
+  <default_symbols>
+     
+    <!-- Reset Adresses -->
+    <!--
+    <symbol name="RST0" address="ram:0000" entry="true"/>
+    <symbol name="RST1" address="ram:0008" entry="true"/>
+    <symbol name="RST2" address="ram:0010" entry="true"/>
+    <symbol name="RST3" address="ram:0018" entry="true"/>
+    <symbol name="RST4" address="ram:0020" entry="true"/>
+    <symbol name="RST5" address="ram:0028" entry="true"/>
+    <symbol name="RST6" address="ram:0030" entry="true"/>
+    <symbol name="RST7" address="ram:0038" entry="true"/>
+
+-->
+    <!-- Interrupts Adresses -->
+    <!--
+    <symbol name="V-Blank" address="ram:0040" entry="true"/>
+    <symbol name="LCD-STAT" address="ram:0048" entry="true"/>
+    <symbol name="Timer" address="ram:0050" entry="true"/>
+    <symbol name="Serial" address="ram:0058" entry="true"/>
+    <symbol name="Joypad" address="ram:0060" entry="true"/>
+-->
+
+    <!-- Cartridges start here -->
+    <symbol name="_start" address="ram:0000" entry="true"/>
+
+    <!-- Cartridge meta-data -->
+    <symbol name="__graphics__" address="ram:0104"/>      <!-- Nintendo scrolling  graphics -->
+    <symbol name="__title__" address="ram:0134"/>         <!-- Nintendo scrolling  graphics -->
+    <symbol name="__is_color__" address="ram:0143"/>      <!-- 0x80 is color GB -->
+    <symbol name="__license_high__" address="ram:0144"/>  <!-- High nibble of licence code -->
+    <symbol name="__license_low__" address="ram:0145"/>   <!-- Low nibble of licence code -->
+    <symbol name="__is_super__" address="ram:0146"/>      <!-- 0 for GameBoy, 3 for SuperGB -->
+    <symbol name="__cartridge_type__" address="ram:0147"/>
+    <symbol name="__rom_size__" address="ram:0148"/>
+    <symbol name="__ram_size__" address="ram:0149"/>
+    <symbol name="__destination__" address="ram:014a"/>   <!-- 0 for Japan, 1 for non-Japan -->
+    <symbol name="__license_old__" address="ram:014b"/>   <!-- 0 for Japan, 1 for non-Japan -->
+    <symbol name="__rom_ver__" address="ram:014c"/>       <!-- 33 for 0144/0145 check, 79 for Accolade, A4 for Konami -->
+    <symbol name="__complement__" address="ram:014d"/>    <!-- Complement check -->
+    <symbol name="__checksum__" address="ram:014e"/>      <!-- 2 big endian bytes  -->
+
+    <!-- Joypad -->
+    <symbol name="P1" address="ram:ff00"/>
+
+    <!-- Serial transfer -->
+    <symbol name="SB" address="ram:ff01"/>    <!-- Data -->
+    <symbol name="SC" address="ram:ff02"/>    <!-- Control -->
+
+    <!-- Timer -->
+    <symbol name="DIV" address="ram:ff04"/>   <!-- Divider - constanly incremented -->
+    <symbol name="TIMA" address="ram:ff05"/>  <!-- Timer counter -->
+    <symbol name="TMA" address="ram:ff06"/>   <!-- Timer modulo - when timer overflows, this value would be loaded -->
+    <symbol name="TAC" address="ram:ff07"/>   <!-- Timer control - timer increment rate -->
+
+    <!-- Interrupts register -->
+    <symbol name="IF" address="ram:ff0f"/>    <!-- Flag - which interrupt occured -->
+    <symbol name="IE" address="ram:ffff"/>    <!-- Enable -->
+
+    <!-- Sound related IO registers -->
+    <!-- Channel 1 - Tone & Sweep -->
+    <symbol name="NR10" address="ram:ff10"/> <!-- Sweep register -->
+    <symbol name="NR11" address="ram:ff11"/> <!-- Sound length/Wave pattern duty -->
+    <symbol name="NR12" address="ram:ff12"/> <!-- Volume Envelope -->
+    <symbol name="NR13" address="ram:ff13"/> <!-- Frequency lo (Write Only) -->
+    <symbol name="NR14" address="ram:ff14"/> <!-- Frequency hi -->
+    <!-- Channel 2 - Tone -->
+    <symbol name="NR21" address="ram:ff16"/> <!-- Sound Length/Wave Pattern Duty -->
+    <symbol name="NR22" address="ram:ff17"/> <!-- Volume Envelope -->
+    <symbol name="NR23" address="ram:ff18"/> <!-- Frequency lo (Write Only) -->
+    <symbol name="NR24" address="ram:ff19"/> <!-- Frequency hi data -->
+    <!-- Channel 3 - Wave Output -->
+    <symbol name="NR30" address="ram:ff1a"/> <!-- Sound on/off -->
+    <symbol name="NR31" address="ram:ff1b"/> <!-- Sound Length -->
+    <symbol name="NR32" address="ram:ff1c"/> <!-- Select output level -->
+    <symbol name="NR33" address="ram:ff1d"/> <!-- Frequency's lower data (Write Only) -->
+    <symbol name="NR34" address="ram:ff1e"/> <!-- Frequency's higher data -->
+    <symbol name="WAVE" address="ram:ff30"/> <!-- (FF30-FF3F) Wave Pattern RAM -->
+    <!-- Channel 4 - Noise -->
+    <symbol name="NR41" address="ram:ff20"/> <!-- Sound Length -->
+    <symbol name="NR42" address="ram:ff21"/> <!-- Volume Envelope -->
+    <symbol name="NR43" address="ram:ff22"/> <!-- Polynomial Counter -->
+    <symbol name="NR44" address="ram:ff23"/> <!-- Counter/consecutive; Inital -->
+    <!-- Sound Control -->
+    <symbol name="NR50" address="ram:ff24"/> <!-- Channel control / ON-OFF / Volume -->
+    <symbol name="NR51" address="ram:ff25"/> <!-- Selection of Sound output terminal -->
+    <symbol name="NR52" address="ram:ff26"/> <!-- Sound on/off -->
+
+    <!-- Display -->
+    <symbol name="LCDC" address="ram:ff40"/> <!-- LCD Control -->
+    <symbol name="STAT" address="ram:ff41"/> <!-- LCD Status -->
+    <symbol name="SCY" address="ram:ff42"/>  <!-- Scroll Y  -->
+    <symbol name="SCX" address="ram:ff43"/>  <!-- Scroll X -->
+    <symbol name="LY" address="ram:ff44"/>   <!-- LCDC Y-Coordinate (Read Only) -->
+    <symbol name="LYC" address="ram:ff45"/>  <!-- LY Compare -->
+    <symbol name="DMA" address="ram:ff46"/>  <!-- DMA Transfer and Start Address -->
+    <symbol name="BGP" address="ram:ff47"/>  <!--  BG Palette Data -->
+    <symbol name="OBP0" address="ram:ff48"/> <!-- Object Palette 0 Data -->
+    <symbol name="OBP1" address="ram:ff49"/> <!-- Object Palette 1 Data -->
+    <symbol name="WY" address="ram:ff4a"/>   <!-- Window Y Position -->
+    <symbol name="WX" address="ram:ff4b"/>   <!-- Window X Position minus 7 -->
+
+    <!-- Bootrom -->
+    <symbol name="BTS" address="ram:ff50"/>  <!-- Bootrom switch -->    
+  </default_symbols>
+</processor_spec>
